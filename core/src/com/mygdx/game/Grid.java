@@ -24,7 +24,7 @@ public class Grid extends Entity{
 	public Vector2 createNewSpawn(float width)
 	{
 		float tmp = +sectionSize*0.5f*((size.x+1)%2);
-		int rng = MathUtils.random((int)Math.ceil(-size.x/2), (int)Math.ceil(size.y/2.f)-1);
+		int rng = MathUtils.random((int)Math.ceil(-size.x/2), (int)Math.ceil(size.y/2.f)+1);
 		return new Vector2(utils.WIDTH/2.f-width/2.f+tmp+rng*sectionSize,0);
 	}
 	class vec 

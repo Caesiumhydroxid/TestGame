@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import java.util.Stack;
 import java.util.Vector;
 
 import objectAcessor.PointAcessor;
@@ -41,7 +42,7 @@ public class GameState extends State {
 		Vector2 start= grid.getStartCoordinates();
 		point.setPosition(start.x, start.y);
 		entitys.add(point);
-		entitys.add(new Missile(425,0,90,90,new Vector2(0,240)));
+		entitys.add(new Missile(425,0,90,90,new Vector2(0,240),tweenManager));
 	}
 	
 	private TweenCallback pointTweenEnded = new TweenCallback()
@@ -51,36 +52,21 @@ public class GameState extends State {
 		public void onEvent(int type, BaseTween<?> source)
 		{
 			if(type == TweenCallback.COMPLETE)
-				pointTweening=false;
-			
+				pointTweening=false;	
 		}
 	};
+	
 	@Override
 	public void update(float dt) {
 		super.update(dt);
+		applyUserInput(listener.actionQueue);
 		camera.update();
 		time+=dt;
 		if(time>=5)
 		{
 			time=0;
 			Vector2 v=grid.createNewSpawn(90);
-			entitys.add(new Missile(v.x,v.y,90,90,new Vector2(00,200)));
-		}
-		if(Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.UP))
-		{
-			listener.actionQueue.push(flingType.up);
-		}
-		if(Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.LEFT))
-		{
-			listener.actionQueue.push(flingType.left);
-		}
-		if(Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.RIGHT))
-		{
-			listener.actionQueue.push(flingType.right);
-		}
-		if(Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.DOWN))
-		{
-			listener.actionQueue.push(flingType.down);
+			entitys.add(new Missile(v.x,v.y,90,90,new Vector2(00,200),tweenManager));
 		}
 		if(!listener.actionQueue.isEmpty()&&!pointTweening)
 		{
@@ -89,11 +75,18 @@ public class GameState extends State {
 			Tween.to(point, PointAcessor.XY, 0.10f).target(target.x, target.y).ease(TweenEquations.easeOutCubic).setCallback(pointTweenEnded).start(tweenManager);
 		}
 		tweenManager.update(dt);
+		updateEntitys(dt);
+		collided = entitysCollided();
+	}
+	private void updateEntitys(float dt)
+	{
 		for(Entity e:entitys)
 		{
 			e.update(dt);
 		}
-		collided = false;
+	}
+	private boolean entitysCollided()
+	{
 		for(Entity e1:entitys)
 		{
 			for(Entity e2:entitys)
@@ -102,13 +95,34 @@ public class GameState extends State {
 				{
 					if(IntersectorShapes.intersects(e1.getCollisionShapes(), e2.getCollisionShapes()))
 					{
-						collided=true;
+						return true;
 					}
 				}
 			}
 		}
+		return false;
 	}
-
+	
+	private void applyUserInput(Stack<flingType> actionQueue)
+	{
+		if(Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.UP))
+		{
+			actionQueue.push(flingType.up);
+		}
+		if(Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.LEFT))
+		{
+			actionQueue.push(flingType.left);
+		}
+		if(Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.RIGHT))
+		{
+			actionQueue.push(flingType.right);
+		}
+		if(Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.DOWN))
+		{
+			actionQueue.push(flingType.down);
+		}
+	}
+	
 	@Override
 	public void render() {
 		Gdx.gl.glClearColor(1, 1, 1, 1);

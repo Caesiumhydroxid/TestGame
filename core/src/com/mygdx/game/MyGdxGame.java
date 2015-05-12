@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import objectAcessor.MissileAcessor;
 import objectAcessor.PointAcessor;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenManager;
@@ -30,6 +31,7 @@ public class MyGdxGame implements ApplicationListener{
 		camera = new OrthographicCamera(1080,1920);
 		camera.setToOrtho(false, 1080, 1920);
 		Tween.registerAccessor(Point.class, new PointAcessor());
+		Tween.registerAccessor(Missile.class,new MissileAcessor());
 		tweenManager = new TweenManager();
 		stateManager = new StateManager();
 		stateManager.pushState(new GameState(tweenManager,batch,shapeRenderer,camera,listener));
