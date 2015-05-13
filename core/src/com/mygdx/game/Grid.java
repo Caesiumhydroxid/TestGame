@@ -2,6 +2,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.utils.SpawnPosition;
 import com.mygdx.utils.utils;
 
 public class Grid extends Entity{
@@ -21,11 +22,30 @@ public class Grid extends Entity{
 		return new Vector2(utils.WIDTH/2.f+sectionSize*0.5f*((size.x+1)%2),utils.HEIGHT/2.f+sectionSize*0.5f*((size.y+1)%2));
 	}
 	
-	public Vector2 createNewSpawn(float width)
+	public Vector2 createNewSpawn(float width,float height,SpawnPosition position)
 	{
-		float tmp = +sectionSize*0.5f*((size.x+1)%2);
-		int rng = MathUtils.random((int)Math.ceil(-size.x/2), (int)Math.ceil(size.y/2.f)+1);
-		return new Vector2(utils.WIDTH/2.f-width/2.f+tmp+rng*sectionSize,0);
+		float overflowX = +sectionSize*0.5f*((size.x+1)%2);
+		int lowx = (int)Math.ceil(-size.x/2);
+		int highx = (int)Math.round(size.x/2.f)-1;
+		int rngx = MathUtils.random(lowx, highx);
+		int lowy = (int)Math.round(-size.y/2);
+		int highy = (int)Math.round(size.y/2.f)-1;
+		int rngy = MathUtils.random(lowy, highy);
+		float halfx=utils.WIDTH/2.f;
+		float halfy=utils.HEIGHT/2.f;
+		float overflowY=sectionSize*0.5f*((size.y+1)%2);
+		switch(position)
+		{
+		case down:
+			return new Vector2(halfx-width/2.f+overflowX+rngx*sectionSize,halfy+overflowY-width/2.f-sectionSize*10);
+		case up:
+			return new Vector2(halfx-width/2.f+overflowX+rngx*sectionSize,halfy+overflowY-width/2.f+sectionSize*10);
+		case left:
+			return new Vector2(halfx-width/2.f-overflowX-sectionSize*10,halfy+overflowY+rngy*sectionSize-width/2.f);
+		case right:
+			return new Vector2(halfx+width/2.f+overflowX+sectionSize*10,halfy+overflowY+rngy*sectionSize-width/2.f);
+		}
+		return null;
 	}
 	class vec 
 	{

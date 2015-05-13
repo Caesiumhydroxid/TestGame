@@ -1,16 +1,14 @@
 package com.mygdx.game;
 
-import objectAcessor.MissileAcessor;
 import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Timeline;
-import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.TweenManager;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.mygdx.utils.utils;
+import com.mygdx.utils.MissileType;
+import com.mygdx.utils.SpawnPosition;
 
 public class Missile extends Entity {
 
@@ -18,19 +16,21 @@ public class Missile extends Entity {
 	boolean currentlyTweening=false;
 	Timeline tweeningPattern;
 	TweenManager tweenManager;
+	MissileType type;
+	SpawnPosition spawnPosition;
 	public Missile() {
 		super();
 	}
 	
-	public Missile(float x, float y,float width,float height,Vector2 velocity, TweenManager tweenManager) {
+	public Missile(float x, float y,float width,float height, TweenManager tweenManager,SpawnPosition spawnPosition) {
 		super(x, y);
 		this.width = width;
 		this.height = height;
-		setVelocity(velocity);
 		shapes.rectangles.add(new Rectangle(x,y,width,height));
 		this.tweenManager = tweenManager;
+		this.spawnPosition = spawnPosition;
 	}
-	private TweenCallback missileTweenEnded = new TweenCallback()
+	public TweenCallback missileTweenEnded = new TweenCallback()
 	{
 		
 		@Override
@@ -56,11 +56,7 @@ public class Missile extends Entity {
 		if(!currentlyTweening)
 		{
 			currentlyTweening=true;
-			Timeline.createSequence().push(Tween.to(this, MissileAcessor.XY,0.6f).targetRelative(0, utils.gridSize))
-			.push(Tween.to(this, MissileAcessor.XY,0.6f).targetRelative(utils.gridSize,0))
-			.push(Tween.to(this, MissileAcessor.XY,0.6f).targetRelative(0, utils.gridSize))
-			.push(Tween.to(this, MissileAcessor.XY,0.6f).targetRelative(-utils.gridSize,0).setCallback(missileTweenEnded))
-			.start(tweenManager);
+			MissileTweenFactory.createTimelineForMissile(this, MissileType.leftRight,spawnPosition).start(tweenManager);
 		}
 	}
 	@Override

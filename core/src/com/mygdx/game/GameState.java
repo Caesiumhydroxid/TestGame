@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.utils.SpawnPosition;
 
 public class GameState extends State {
 
@@ -27,6 +28,7 @@ public class GameState extends State {
 	private MyGestureListener listener;
 	boolean collided=false;
 	float time=0;
+	float x;
 	private Vector<Entity> entitys;
 	GameState(TweenManager tweenManager, SpriteBatch batch,
 			ShapeRenderer shapeRenderer, OrthographicCamera camera, MyGestureListener listener) {
@@ -38,11 +40,11 @@ public class GameState extends State {
 	@Override
 	public void create() {
 		point = new Point();
-		grid = new Grid(6,2);
+		grid = new Grid(3,3);
 		Vector2 start= grid.getStartCoordinates();
 		point.setPosition(start.x, start.y);
 		entitys.add(point);
-		entitys.add(new Missile(425,0,90,90,new Vector2(0,240),tweenManager));
+		time = 1.8f;
 	}
 	
 	private TweenCallback pointTweenEnded = new TweenCallback()
@@ -62,21 +64,23 @@ public class GameState extends State {
 		applyUserInput(listener.actionQueue);
 		camera.update();
 		time+=dt;
-		if(time>=5)
+		if(time>=1.4f)
 		{
 			time=0;
-			Vector2 v=grid.createNewSpawn(90);
-			entitys.add(new Missile(v.x,v.y,90,90,new Vector2(00,200),tweenManager));
+			Vector2 v=grid.createNewSpawn(90,90,SpawnPosition.left);
+			entitys.add(new Missile(v.x,v.y,90,90,tweenManager,SpawnPosition.left));
 		}
 		if(!listener.actionQueue.isEmpty()&&!pointTweening)
 		{
 			Vector2 target=grid.calculateNewPointPosition(listener.actionQueue.pop(), point);
 			pointTweening=true;
-			Tween.to(point, PointAcessor.XY, 0.10f).target(target.x, target.y).ease(TweenEquations.easeOutCubic).setCallback(pointTweenEnded).start(tweenManager);
+			Tween.to(point, PointAcessor.XY, 0.2f).target(target.x, target.y).ease(TweenEquations.easeOutCubic).setCallback(pointTweenEnded).start(tweenManager);
 		}
 		tweenManager.update(dt);
 		updateEntitys(dt);
 		collided = entitysCollided();
+		//camera.rotate(90*dt);
+		x+=dt;
 	}
 	private void updateEntitys(float dt)
 	{
