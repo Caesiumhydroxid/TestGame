@@ -9,7 +9,7 @@ import com.mygdx.utils.SpawnPosition;
 import com.mygdx.utils.utils;
 
 public class MissileTweenFactory {
-	static float time = 0.2f;
+	static float time = 0.4f;
 	static public Timeline createTimelineForMissile(Missile missile,MissileType type,SpawnPosition position)
 	{
 		float mulx=1;

@@ -22,13 +22,14 @@ public class Missile extends Entity {
 		super();
 	}
 	
-	public Missile(float x, float y,float width,float height, TweenManager tweenManager,SpawnPosition spawnPosition) {
+	public Missile(float x, float y,float width,float height, TweenManager tweenManager,SpawnPosition spawnPosition,MissileType type) {
 		super(x, y);
 		this.width = width;
 		this.height = height;
 		shapes.rectangles.add(new Rectangle(x,y,width,height));
 		this.tweenManager = tweenManager;
 		this.spawnPosition = spawnPosition;
+		this.type = type;
 	}
 	public TweenCallback missileTweenEnded = new TweenCallback()
 	{
@@ -56,7 +57,7 @@ public class Missile extends Entity {
 		if(!currentlyTweening)
 		{
 			currentlyTweening=true;
-			MissileTweenFactory.createTimelineForMissile(this, MissileType.leftRight,spawnPosition).start(tweenManager);
+			MissileTweenFactory.createTimelineForMissile(this, type,spawnPosition).start(tweenManager);
 		}
 	}
 	@Override
@@ -66,7 +67,7 @@ public class Missile extends Entity {
 
 	@Override
 	void render(ShapeRenderer renderer) {
-		renderer.setColor(0, 150, 150, 255);
+		renderer.setColor(0, 100, 150, 255);
 		renderer.rect(x, y, width, height);
 	}
 	

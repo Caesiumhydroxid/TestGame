@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.utils.MissileType;
 import com.mygdx.utils.SpawnPosition;
 
 public class GameState extends State {
@@ -29,6 +30,7 @@ public class GameState extends State {
 	boolean collided=false;
 	float time=0;
 	float x;
+	boolean topSide=false;
 	private Vector<Entity> entitys;
 	GameState(TweenManager tweenManager, SpriteBatch batch,
 			ShapeRenderer shapeRenderer, OrthographicCamera camera, MyGestureListener listener) {
@@ -64,11 +66,20 @@ public class GameState extends State {
 		applyUserInput(listener.actionQueue);
 		camera.update();
 		time+=dt;
-		if(time>=1.4f)
+		if(time>=0.4f)
 		{
 			time=0;
-			Vector2 v=grid.createNewSpawn(90,90,SpawnPosition.left);
-			entitys.add(new Missile(v.x,v.y,90,90,tweenManager,SpawnPosition.left));
+			if(this.topSide)
+			{
+				Vector2 v=grid.createNewSpawn(90,90,SpawnPosition.left);
+				entitys.add(new Missile(v.x,v.y,90,90,tweenManager,SpawnPosition.left,MissileType.straight));
+			}
+			else
+			{
+				Vector2 v=grid.createNewSpawn(90,90,SpawnPosition.down);
+				entitys.add(new Missile(v.x,v.y,90,90,tweenManager,SpawnPosition.down,MissileType.straight));
+			}
+			topSide = !topSide;
 		}
 		if(!listener.actionQueue.isEmpty()&&!pointTweening)
 		{
